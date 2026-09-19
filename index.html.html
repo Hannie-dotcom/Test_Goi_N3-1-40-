@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🌸 Mimikara N3 - Bài 1 (1-40)</title>
+    <!-- Font chữ Mincho Nhật Bản và Font Tiếng Việt Quicksand tròn trịa dễ nhìn -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Shippori+Mincho:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        /* Tông màu nền Pastel Nhám Dịu Mắt */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.6) 0%, rgba(254, 215, 170, 0.4) 100%),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1200&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: #4a3b32; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; min-height: 100dvh; margin: 0; padding: 16px; overflow-x: hidden;
+        }
+
+        /* Hiệu ứng Sakura rơi nhẹ nhàng */
+        #sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal { position: absolute; font-size: 18px; opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); animation: floatUp linear infinite; }
+        @keyframes floatUp { 
+            0% { transform: translate(0, 105dvh) rotate(0deg) scale(0.7); opacity: 0.1; } 
+            20% { opacity: 0.8; } 80% { opacity: 0.8; } 
+            100% { transform: translate(50px, -30px) rotate(360deg) scale(1.1); opacity: 0; } 
+        }
+
+        /* Khung Game bo tròn nhám mờ chuẩn di động */
+        .game-container {
+            position: relative; z-index: 2; 
+            background: rgba(255, 253, 245, 0.94); 
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            padding: 24px 18px; border-radius: 22px; 
+            border: 2px solid rgba(255, 255, 255, 0.95); 
+            box-shadow: 0 12px 30px rgba(74, 59, 50, 0.12);
+            max-width: 420px; width: 100%; text-align: center;
+        }
+
+        h2 { 
+            font-size: 20px; 
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #785a46 0%, #9a3412 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            margin: 0 0 12px; font-weight: 700; 
+        }
+
+        .header-info { 
+            display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: #8c5627; 
+            margin-bottom: 14px; padding: 8px 14px; background: #ffe8cc; border-radius: 12px; 
+        }
+
+        /* Chữ Kanji dùng Font Mincho cực sang */
+        .question { 
+            font-family: 'Shippori Mincho', serif;
+            font-size: 36px; font-weight: 800; margin: 4px 0 8px; color: #3a2d25; 
+            min-height: 48px; display: flex; align-items: center; justify-content: center; 
+        }
+
+        .hiragana { 
+            font-family: 'Shippori Mincho', serif;
+            font-size: 17px; font-weight: 700; color: #9a3412; background: #ffedd5; 
+            display: inline-block; padding: 3px 16px; border-radius: 16px; margin-bottom: 16px; 
+            border: 1px dashed #fdba74; min-height: 24px; 
+        }
+
+        /* Ô chọn đáp án thiết kế giống mẫu */
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        
+        button { 
+            padding: 13px 16px; font-size: 15px; font-family: 'Quicksand', sans-serif; 
+            border: 2px solid #fed7aa; background: #ffffff; color: #5c4535; 
+            border-radius: 14px; cursor: pointer; font-weight: 600; 
+            transition: transform 0.1s; 
+        }
+        button:active:not(:disabled) { transform: scale(0.98); }
+
+        /* Đáp án đúng/sai đổi màu dịu mắt */
+        .correct { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important; color: white !important; border-color: #15803d !important; }
+        .wrong { background: linear-gradient(135deg, #f87171 0%, #dc2626 100%) !important; color: white !important; border-color: #b91c1c !important; }
+        
+        .feedback { margin-top: 12px; font-weight: 700; font-size: 16px; min-height: 24px; }
+        
+        .next-btn { 
+            margin-top: 14px; background: linear-gradient(135deg, #785a46 0%, #5c4535 100%); 
+            color: white; border: none; width: 100%; display: none; font-weight: 700; 
+            padding: 14px; border-radius: 14px; cursor: pointer; 
+        }
+
+        #result-screen { display: none; }
+        .pass { color: #15803d; font-weight: bold; }
+        .fail { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="sakura-container"></div>
+
+    <!-- Màn hình chơi chính -->
+    <div class="game-container" id="play-screen">
+        <h2>🌸 Mimikara N3 - Bài 1 (1-40) 🌸</h2>
+        <div class="header-info">
+            <div>Câu: <span id="current-q">1</span> / <span id="total-q">40</span></div>
+            <div>Điểm: <span id="score">0</span> 🌟</div>
+        </div>
+        <div class="hiragana" id="hiragana">hiragana</div>
+        <div class="question" id="kanji">KANJI</div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="goToNext()">Câu tiếp theo 🌸 ➔</button>
+    </div>
+
+    <!-- Màn hình kết quả -->
+    <div class="game-container" id="result-screen">
+        <h2>🌸 Kết quả của bạn 🌸</h2>
+        <h1 id="final-score" style="font-size: 40px; margin: 12px 0; color: #785a46;">0/40</h1>
+        <h3 id="final-percent" style="color: #8c5627; margin-bottom: 8px;">0%</h3>
+        <p id="result-message" style="font-size: 15px; margin-bottom: 20px;"></p>
+        <button id="retry-btn" onclick="startGame()" style="width: 100%; background: linear-gradient(135deg, #785a46 0%, #5c4535 100%); color: white; border: none; padding: 14px; border-radius: 14px; cursor: pointer;">Làm lại</button>
+    </div>
+
+    <script>
+        // Dữ liệu 40 từ vựng Mimikara N3 - Bài 1
+        const originalVocabList = [
+            { kanji: '男性', hiragana: 'だんせい', meaning: 'Nam giới' },
+            { kanji: '女性', hiragana: 'じょせい', meaning: 'Nữ giới' },
+            { kanji: '高齢', hiragana: 'こうれい', meaning: 'Cao tuổi' },
+            { kanji: '年上', hiragana: 'としうえ', meaning: 'Hơn tuổi / Lớn tuổi hơn' },
+            { kanji: '目上', hiragana: 'めうえ', meaning: 'Bề trên / Người lớn tuổi hơn' },
+            { kanji: '先輩', hiragana: 'せんぱい', meaning: 'Tiền bối / Đàn anh, đàn chị' },
+            { kanji: '後輩', hiragana: 'こうはい', meaning: 'Hậu bối / Đàn em' },
+            { kanji: '上司', hiragana: 'じょうし', meaning: 'Cấp trên / Sếp' },
+            { kanji: '相手', hiragana: 'あいて', meaning: 'Đối phương / Bạn đời' },
+            { kanji: '知り合い', hiragana: 'しりあい', meaning: 'Người quen' },
+            { kanji: '友人', hiragana: 'ゆうじん', meaning: 'Bạn bè' },
+            { kanji: '仲', hiragana: 'なか', meaning: 'Mối quan hệ' },
+            { kanji: '生年月日', hiragana: 'せいねんがっぴ', meaning: 'Ngày tháng năm sinh' },
+            { kanji: '誕生', hiragana: 'たんじょう', meaning: 'Ra đời / Trỗi dậy' },
+            { kanji: '年', hiragana: 'とし', meaning: 'Năm / Tuổi' },
+            { kanji: '出身', hiragana: 'しゅっしん', meaning: 'Xuất thân / Quê quán' },
+            { kanji: '故郷', hiragana: 'こきょう', meaning: 'Cố hương / Quê hương' },
+            { kanji: '成長', hiragana: 'せいちょう', meaning: 'Trưởng thành / Phát triển' },
+            { kanji: '成人', hiragana: 'せいじん', meaning: 'Người trưởng thành' },
+            { kanji: '合格', hiragana: 'ごうかく', meaning: 'Đỗ / Trúng tuyển' },
+            { kanji: '進学', hiragana: 'しんがく', meaning: 'Học lên cao hơn' },
+            { kanji: '退学', hiragana: 'たいがく', meaning: 'Thôi học / Bỏ học' },
+            { kanji: '就職', hiragana: 'しゅうしょく', meaning: 'Tìm việc / Có việc làm' },
+            { kanji: '退職', hiragana: 'たいしょく', meaning: 'Nghỉ việc / Nghỉ hưu' },
+            { kanji: '失業', hiragana: 'しつぎょう', meaning: 'Thất nghiệp' },
+            { kanji: '残業', hiragana: 'ざんぎょう', meaning: 'Làm thêm giờ' },
+            { kanji: '生活', hiragana: 'せいかつ', meaning: 'Cuộc sống / Sinh hoạt' },
+            { kanji: '通勤', hiragana: 'つうきん', meaning: 'Đi làm' },
+            { kanji: '学歴', hiragana: 'がくれき', meaning: 'Bằng cấp học vấn' },
+            { kanji: '給料', hiragana: 'きゅうりょう', meaning: 'Tiền lương' },
+            { kanji: '面接', hiragana: 'めんせつ', meaning: 'Phỏng vấn' },
+            { kanji: '休憩', hiragana: 'きゅうけい', meaning: 'Nghỉ giải lao' },
+            { kanji: '観光', hiragana: 'かんこう', meaning: 'Tham quan / Du lịch' },
+            { kanji: '帰国', hiragana: 'きこく', meaning: 'Về nước' },
+            { kanji: '帰省', hiragana: 'きせい', meaning: 'Về quê' },
+            { kanji: '帰宅', hiragana: 'きたく', meaning: 'Về nhà' },
+            { kanji: '参加', hiragana: 'さんか', meaning: 'Tham gia' },
+            { kanji: '出席', hiragana: 'しゅっせき', meaning: 'Có mặt / Xuất hiện' },
+            { kanji: '欠席', hiragana: 'けっせき', meaning: 'Vắng mặt' },
+            { kanji: '遅刻', hiragana: 'ちこく', meaning: 'Đến muộn' }
+        ];
+
+        let playList = [], currentIndex = 0, score = 0; 
+        const totalQuestions = originalVocabList.length;
+
+        // Tạo cánh hoa rơi ngẫu nhiên nhẹ nhàng
+        function createPetal() {
+            const container = document.getElementById('sakura-container'); 
+            const petal = document.createElement('div'); 
+            petal.classList.add('petal');
+            const icons = ['🌸', '🌺', '✨', '🌸']; 
+            petal.innerText = icons[Math.floor(Math.random() * icons.length)];
+            petal.style.fontSize = `${Math.random() * 6 + 14}px`; 
+            petal.style.left = `${Math.random() * 100}vw`;
+            const duration = Math.random() * 3 + 5; 
+            petal.style.animationDuration = `${duration}s`;
+            container.appendChild(petal); 
+            setTimeout(() => petal.remove(), duration * 1000);
+        }
+        setInterval(createPetal, 450);
+
+        // Hàm đảo ngẫu nhiên mảng
+        function shuffle(array) { 
+            let arr = [...array]; 
+            for (let i = arr.length - 1; i > 0; i--) { 
+                const j = Math.floor(Math.random() * (i + 1)); 
+                [arr[i], arr[j]] = [arr[j], arr[i]]; 
+            } 
+            return arr; 
+        }
+
+        function startGame() {
+            document.getElementById('result-screen').style.display = 'none'; 
+            document.getElementById('play-screen').style.display = 'block';
+            score = 0; currentIndex = 0; 
+            document.getElementById('score').innerText = score; 
+            document.getElementById('total-q').innerText = totalQuestions;
+            playList = shuffle(originalVocabList); 
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            document.getElementById('feedback').innerText = ''; 
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('current-q').innerText = currentIndex + 1; 
+            
+            let cur = playList[currentIndex];
+            document.getElementById('kanji').innerText = cur.kanji;
+            document.getElementById('hiragana').innerText = cur.hiragana;
+
+            // Đảo ngẫu nhiên 4 đáp án
+            let options = [cur.meaning];
+            while(options.length < 4) { 
+                let randomWrong = originalVocabList[Math.floor(Math.random() * originalVocabList.length)].meaning; 
+                if(!options.includes(randomWrong)) options.push(randomWrong); 
+            }
+            options = shuffle(options);
+
+            const optionsDiv = document.getElementById('options'); 
+            optionsDiv.innerHTML = '';
+            options.forEach(opt => { 
+                const btn = document.createElement('button'); 
+                btn.innerText = opt; 
+                btn.onclick = () => checkAnswer(btn, opt, cur.meaning); 
+                optionsDiv.appendChild(btn); 
+            });
+        }
+
+        function checkAnswer(btn, selected, correct) {
+            const allBtns = document.getElementById('options').querySelectorAll('button'); 
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                btn.classList.add('correct'); 
+                document.getElementById('feedback').innerText = '🌸 Chính xác rồi!'; 
+                document.getElementById('feedback').style.color = '#15803d'; 
+                score++; 
+                document.getElementById('score').innerText = score;
+            } else {
+                btn.classList.add('wrong'); 
+                document.getElementById('feedback').innerText = `❌ Đáp án đúng: ${correct}`; 
+                document.getElementById('feedback').style.color = '#dc2626';
+                allBtns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
+            }
+
+            document.getElementById('next-btn').style.display = 'block';
+            document.getElementById('next-btn').innerText = (currentIndex === totalQuestions - 1) ? 'Xem kết quả 🌸 ➔' : 'Câu tiếp theo 🌸 ➔';
+        }
+
+        function goToNext() { 
+            currentIndex++; 
+            if (currentIndex < totalQuestions) loadQuestion(); 
+            else showResult(); 
+        }
+
+        function showResult() {
+            document.getElementById('play-screen').style.display = 'none'; 
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-score').innerText = `${score} / ${totalQuestions}`; 
+            let percent = Math.round((score / totalQuestions) * 100);
+            document.getElementById('final-percent').innerText = `${percent}%`; 
+            let msgElement = document.getElementById('result-message');
+            
+            if (percent >= 80) { 
+                msgElement.innerText = "🌸 Xuất sắc! Bạn đã vượt qua bài kiểm tra!"; 
+                msgElement.className = "pass"; 
+            } else { 
+                msgElement.innerText = "Chưa đạt 80%. Hãy làm lại để nhớ từ nhé!"; 
+                msgElement.className = "fail"; 
+            }
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
